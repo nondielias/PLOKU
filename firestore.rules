@@ -1,0 +1,53 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Dedicated check for the admin user ID
+    function isAdmin() {
+      return isSignedIn() && request.auth.uid == 'g0rDnAnuQjVj6A4ffob8sm4Y8rM2';
+    }
+
+    // Global default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Products collection: public read, admin write
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+
+      // Reviews sub-collection:
+      // Customers can read all product reviews and post star ratings and comments.
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create: if true; // Allows customers (both authenticated and browsing) to submit product reviews
+        allow update, delete: if isAdmin() || (isSignedIn() && resource.data.userId == request.auth.uid);
+      }
+    }
+
+    // Users collection:
+    // Admin user ID has read access to all user data.
+    // All other users are strictly locked down to their own data only.
+    match /users/{userId} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow update: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow delete: if isAdmin();
+
+      // Uploaded files subcollection:
+      // Admin has read access to all user files.
+      // Non-admin users are locked down to their own files only.
+      match /files/{fileId} {
+        allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+        allow create: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+        allow update: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+        allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      }
+    }
+  }
+}

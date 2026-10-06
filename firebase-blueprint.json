@@ -1,0 +1,172 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile document containing account credentials and metadata",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique user ID"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User email address"
+        },
+        "name": {
+          "type": "string",
+          "description": "Full name or display name"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["client", "admin"],
+          "description": "Role of the user"
+        },
+        "fileCount": {
+          "type": "number",
+          "description": "Total number of uploaded files"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp or formatted date string"
+        }
+      },
+      "required": ["email", "createdAt"]
+    },
+    "FileItem": {
+      "title": "FileItem",
+      "description": "Uploaded file metadata and content",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique file ID"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner user ID"
+        },
+        "name": {
+          "type": "string",
+          "description": "Original file name"
+        },
+        "size": {
+          "type": "number",
+          "description": "Size of file in bytes"
+        },
+        "type": {
+          "type": "string",
+          "description": "MIME type of file"
+        },
+        "url": {
+          "type": "string",
+          "description": "Download or preview URL / data URI"
+        },
+        "uploadedAt": {
+          "type": "string",
+          "description": "Upload timestamp"
+        }
+      },
+      "required": ["userId", "name", "uploadedAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Storefront electronic gadget item",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Product identifier"
+        },
+        "name": {
+          "type": "string",
+          "description": "Product display name"
+        },
+        "price": {
+          "type": "number",
+          "description": "Price in USD"
+        },
+        "category": {
+          "type": "string",
+          "description": "Gadget category"
+        },
+        "stock": {
+          "type": "number",
+          "description": "Current inventory count"
+        },
+        "description": {
+          "type": "string",
+          "description": "Product description"
+        },
+        "image": {
+          "type": "string",
+          "description": "Image asset URL"
+        }
+      },
+      "required": ["name", "price", "category"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Customer rating and written feedback for a product",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique review identifier"
+        },
+        "productId": {
+          "type": "string",
+          "description": "Identifier of the reviewed product"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Identifier of the reviewer user"
+        },
+        "userName": {
+          "type": "string",
+          "description": "Display name of the reviewer"
+        },
+        "rating": {
+          "type": "number",
+          "description": "Star rating from 1 to 5"
+        },
+        "comment": {
+          "type": "string",
+          "description": "Written feedback or review comment"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of when review was posted"
+        }
+      },
+      "required": ["productId", "userName", "rating", "comment", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/User"
+      },
+      "description": "User profile records with email and creation dates"
+    },
+    "/users/{userId}/files/{fileId}": {
+      "schema": {
+        "$ref": "#/entities/FileItem"
+      },
+      "description": "Uploaded files belonging to each user"
+    },
+    "/products/{productId}": {
+      "schema": {
+        "$ref": "#/entities/Product"
+      },
+      "description": "Store inventory products"
+    },
+    "/products/{productId}/reviews/{reviewId}": {
+      "schema": {
+        "$ref": "#/entities/Review"
+      },
+      "description": "Customer reviews and star ratings sub-collection for a product"
+    }
+  }
+}

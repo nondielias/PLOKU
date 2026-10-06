@@ -1,0 +1,6 @@
+{
+  "name": "PLOKU - Electronic Gadget Store",
+  "description": "High-tech electronic gadgets storefront with real-time product catalog, shopping bag, WhatsApp checkout, and password-protected Admin Dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
